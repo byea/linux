@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算机网络期中考试</title>
+    <style>
+        /*页面头样式*/
+        html,body,ul,ol{padding: 0;margin: 0;}
+        .top_title{
+            position: fixed;color: #008000;height: 30px;line-height: 30px; background-color: rgba(0, 80, 0, 0.6); text-align: center;color:white;width:100%;
+        }
+        .container{width:95%;margin:0 auto;position: relative;}
+        ul,ol{list-style-type: none;}
+        .header{height:30px;}
+
+        /*页面中样式*/
+        .main{width: 100%;}
+        .main>.content{flex:10;display: none;}
+        #start {display:block;margin:0 auto;}
+        .main>.left-nav{width:12em;position:relative;display: none;}
+        .left-nav>.topic-num{position:fixed;right:3.5%;top:8em;width:12em;}
+        .left-nav>.topic-num>ul{display: block;overflow: hidden;}
+        .left-nav>.topic-num>ul>li{width:2em;height:2em;line-height:2em;border: 1px green solid;
+            float:left;text-align: center;margin-top: 1px;margin-right: 1px;}
+
+        .ans{display:none;color:#336633;}
+        a{color:white;display: block;text-decoration: none;}
+        li{opacity:.3;background-color: #aaaaaa;}
+        #submit{display: none;}
+        #score{position: fixed; color: #ff180c;right:5%;top:9%;font-size: 4em;font-style: italic;border-bottom: 2px solid black;}
+        /*页面脚样式*/
+    </style>
+    <script src="js/axiosmin.js" ></script>
+</head>
+<body>
+    <div class="top_title">计算机网络期中考试</div>
+    <div class="container">
+        <div class="header">
+        </div>
+        <div class="main">
+            <input type="button" id="start" value="开始答题" />
+            <div class="content" id="content1">
+                <div id="one">
+                    <h4>一、选择题(每题10分，共100分)</h4>
+                <!--<div class="one-select">-->
+                    <!--<div class="title" id="a1">1、在OSI模型中，HTTP协议工作在第（）层，交换机工作在第（）层。</div>-->
+                    <!--<div class="sele-an" >-->
+                        <!--<input type="radio" name="a1"  value='a' />A、7/3-->
+                        <!--<input type="radio" name="a1" value='b' />B、7/2-->
+                        <!--<input type="radio" name="a1" value='c' />C、6/3-->
+                        <!--<input type="radio" name="a1" value='d' />D、6/2-->
+                        <!--<span class="ans">正确答案A</span>-->
+                        <!--<span class="result" ></span>-->
+                    <!--</div>-->
+                <!--</div>-->
+                </div>
+                <div id="more">
+                    <div  class="more-select">
+					<!--<h4>二、多项选择题(每题15分，共300分)</h4>-->
+
+                    </div>
+                </div>
+                <div>
+                    <input type="button" id="submit" value="提交试卷" />
+                </div>
+
+            </div>
+
+            <div class="left-nav">                <!--右侧边栏-->
+                <div class="topic-num">
+                    <ul class="ul"></ul>
+                </div>
+            </div>
+            <div id="score"></div>
+        </div>
+        <footer>
+            <div>Copyright © 信息教学专用 2020-5-19</div>
+        </footer>
+    </div>
+
+	<script src="./net.js" ></script>
+    <script>	   
+	   var name=window.prompt("请输入你的姓名：")
+		var lis;  //获取所有li方块,在点击"开始答题"后赋值
+        var start=document.getElementById("start");  //点击"开始答题" 就异步从后台取数据
+        var flag=false;                         //flag保证只从后台取一次数据
+        var data={};
+        var submit=document.getElementById("submit");
+        var num=0;                               //初始化得分
+        var answers=[];
+        var score=document.getElementById("score");
+        start.onclick=function () {             //从后台取数据
+            document.getElementById("content1").style.display="block";  //点击"开始答题" 后显示内容
+            document.getElementsByClassName("left-nav")[0].style.display="block";  //点击"开始答题" 后显示右侧边栏
+            if(!flag){
+				show(datas);
+                        lis=document.querySelectorAll(".ul>li");  //获取所有li方块
+                        for(let i=1;i<datas.length;i++){
+                            let aa="a"+i;                                  //a1-a40
+                            var aas=document.getElementsByName(aa);
+                            aas.forEach(function(ele){
+                                ele.addEventListener('click',function () {
+                                    ListenerValue(lis,"a"+i);
+                                })
+                            })
+                        }
+                    
+                    
+            }
+            flag=true;
+            this.style.display="none";
+            document.querySelector(".ul").style.display="block"; //显示li小方块
+            submit.style.display="block";
+        }
+        var one=document.getElementById("one");      //点击"开始答题"后隐藏该按钮
+        var more=document.getElementById("more");    //点击"开始答题"后显示"提交试卷"
+
+        /**
+         *
+         * @param data   后台取的数据
+         * @param ele    前台的元素内添加
+         */
+        function show(data,ele) {
+            for(let i=0;i<data.length;i++){
+                answers[i]=data[i].answer;                      //把每题的答案存到全局变量
+                if(i<30){
+                    one.innerHTML+=`<p class="one-select">
+                        <div class="title" id="a${i+1}">${i+1}、${data[i].title}</div>
+                    <div class="sele-an" >
+                    <input type="radio" name="a${i+1}"  value='A' />A、${data[i].a}<br />
+                <input type="radio" name="a${i+1}" value='B' />B、${data[i].b}<br />
+                <input type="radio" name="a${i+1}" value='C' />C、${data[i].c}<br />
+                <input type="radio" name="a${i+1}" value='D' />D、${data[i].d}<br />
+                <span class="ans"></span>
+                    <span class="result" ></span>
+                    </div></p>`;
+                }
+				else{
+                    more.innerHTML+=`<p class="more-select">
+                        <div class="title" id="a${i+1}">${i+1}、${data[i].title}</div>
+                    <div class="sele-an" >
+                    <input type="checkbox" name="a${i+1}"  value='A' />A、${data[i].a}<br />
+                <input type="checkbox" name="a${i+1}" value='B' />B、${data[i].b}<br />
+                <input type="checkbox" name="a${i+1}" value='C' />C、${data[i].c}<br />
+                <input type="checkbox" name="a${i+1}" value='D' />D、${data[i].d}<br />
+                <span class="ans">正确答案${data[i].answer}</span>
+                    <span class="result" ></span>
+                    </div></p>`;
+                }
+            }
+        }
+        //完成ul的初始化
+        var ul=document.querySelector('.ul');
+        for(let i=1;i<=datas.length;i++){
+            let li=document.createElement("li");
+            li.innerHTML="<a href='#a"+i+"'>"+i+"</a>"
+            ul.appendChild(li);
+        }
+
+
+        /**
+         * 交卷后，算得分，更改做错和做对的Li方块
+         */
+        submit.onclick=function () { //点击交卷后，取每题的值
+            let ans=document.querySelectorAll('.ans');
+            ans.forEach(function (ele) {
+                ele.style.display='block';   //"提交试卷"后显示每题的正确答案
+            })
+            answers.forEach(function (ele,index) {
+                let temp="a"+(index+1);
+                if(index<30){//单选题
+                    //console.log(index+" "+ele+" "+getOne(temp))
+                    if(ele==getOne(temp)){                           //如果正确，li方块变绿色，题目变绿色,加10分
+                        lis[index].style.backgroundColor="green";
+                        document.getElementById(temp).style.color='green';
+                        num+=5;
+                    }else{                                           //如果错误，li方块变红色，题目变红色
+                        lis[index].style.backgroundColor='red';
+                        document.getElementById(temp).style.color='red';
+                    }
+                }else{            //多选题
+                    //console.log(index+" "+ele+" "+getMore(temp))
+                    if(ele==getMore(temp)){                         //如果正确，li方块变绿色，题目变绿色,加10分
+                        lis[index].style.backgroundColor="green";
+                        document.getElementById(temp).style.color='green';
+                        num+=15;                                                 //加15分
+                    }else{                                          //如果正确，li方块变绿色，题目变绿色,加10分
+                        lis[index].style.backgroundColor='red';
+                        document.getElementById(temp).style.color='red';
+                    }
+                }
+
+            })
+
+            function getOne(name){               //获取单选题的选择
+                let answer1=0;
+                if(document.querySelector("input[name='"+name+"']:checked"))
+                    answer1=document.querySelector("input[name='"+name+"']:checked").value;
+                return answer1;
+            }
+
+            function getMore(name){              //获取多选题的选择
+                var a21s=document.getElementsByName(name);
+                a21_v="";
+                a21s.forEach(function (ele) {  //取多选题的值
+                    if(ele.checked==true){
+                        a21_v+=ele.value;
+                    }
+                });
+                return a21_v;
+                //console.log(a21_v);      //当前多选题的值
+            };
+
+            //console.log("a21 "+answer21);
+            score.innerHTML=name+`:${num}<i style="font-size: .2em;">分<i>`;
+            this.style.display="none";
+        }
+
+
+        //传入元素name当此元素有值 更改对应li方块颜色
+        function ListenerValue(lis,name){
+            var value=document.querySelector("input[name="+name+"]:checked").value;
+            var flag=false;
+            if(value!=null|value!=""){
+                var num=name.substring(1);
+                lis[num-1].style.backgroundColor="yellow";
+            }
+        }
+    </script>
+</body>
+</html>
